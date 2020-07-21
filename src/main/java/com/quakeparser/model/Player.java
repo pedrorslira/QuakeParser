@@ -4,6 +4,11 @@ public class Player {
 	String nickname;
 	int totalKills;
 
+	public Player(String nickname) {
+		totalKills = 0;
+		this.nickname = nickname;
+	}
+
 	public String getNickname() {
 		return nickname;
 	}

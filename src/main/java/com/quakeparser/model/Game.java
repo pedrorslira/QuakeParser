@@ -1,12 +1,18 @@
 package com.quakeparser.model;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Game {
+	private static AtomicInteger increment = new AtomicInteger(0);
 	private int id;
 	private int totalKills;
 	private ArrayList<Player> players = new ArrayList<>();
-	private ArrayList<Integer> kills = new ArrayList<>();
+
+	public Game() {
+		totalKills = 0;
+		id = increment.incrementAndGet();
+	}
 
 	public int getId() {
 		return id;
@@ -32,12 +38,12 @@ public class Game {
 		this.players = players;
 	}
 
-	public ArrayList<Integer> getKills() {
-		return kills;
-	}
-
-	public void setKills(ArrayList<Integer> kills) {
-		this.kills = kills;
-
+	public Player searchPlayer(String nickname) {
+		for (Player p : this.players) {
+			if (p.getNickname().equals(nickname)) {
+				return p;
+			}
+		}
+		return null;
 	}
 }

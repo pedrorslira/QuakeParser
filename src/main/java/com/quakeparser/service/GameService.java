@@ -4,20 +4,25 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class GameService { // LEMBRAR DE TIRAR O STATIC DE TUDO AQUI
+import org.springframework.stereotype.Service;
 
-	public static void readFile() {
+import com.quakeparser.model.Game;
+import com.quakeparser.model.Player;
+import com.quakeparser.repository.GameRepository;
+
+@Service
+public class GameService {
+
+	public void readFile() {
 		try {
 			FileReader file = new FileReader("./src/main/resources/games.log");
 			BufferedReader readFile = new BufferedReader(file);
 			String line = readFile.readLine();
 			while (line != null) {
-
-				//handleKill(line);
-				//handleInitGame(line);
-				//handlePlayer(line);
-
-				line = readFile.readLine();
+				handleInitGame(line, readFile);
+				if (line != null) {
+					line = readFile.readLine();
+				}
 			}
 			file.close();
 		} catch (IOException e) {
@@ -25,38 +30,55 @@ public class GameService { // LEMBRAR DE TIRAR O STATIC DE TUDO AQUI
 		}
 	}
 
-	public static void handleInitGame(String line) {
-		if (line.substring(7, 16).equals("InitGame:")) {
-			System.out.println(line.substring(7));
+	public void handleInitGame(String line, BufferedReader readFile) {
+		try {
+			if (line.substring(7, 16).equals("InitGame:")) {
+				Game game = new Game();
+				line = readFile.readLine();
+				while (!line.substring(7, 20).equals("ShutdownGame:")) {
+					handlePlayer(line, game);
+					handleKill(line, game);
+					line = readFile.readLine();
+				}
+				GameRepository.getInstance().getGames().add(game);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	public static void handlePlayer(String line) {
-		if (line.length() > 29) {
-			if (line.substring(7, 29).equals("ClientUserinfoChanged:")) {
-				int lastIndexNickname = line.substring(34).indexOf("\\t");
-				System.out.println(line.substring(34).substring(0, lastIndexNickname));
+	public void handlePlayer(String line, Game game) {
+		if (line.length() > 29 && line.substring(7, 29).equals("ClientUserinfoChanged:")) {
+			int indexNickname = line.substring(34).indexOf("\\t");
+			String nickname = line.substring(34).substring(0, indexNickname);
+			if (game.searchPlayer(nickname) == null) {
+				game.getPlayers().add(new Player(nickname));
 			}
 		}
-
 	}
 
-	public static void handleKill(String line) {
-		
-		if (line.substring(7, 12).equals("Kill:")) {
-			if(line.contains("<world>")){
+	public void handleKill(String line, Game game) {
+		if (line.substring(7, 12).equals("Kill:")) {			
+			//game.setTotalKills(game.getTotalKills() + 1); //não esquecer de resolver o total kills para cada jogo
+			if (line.contains("<world>")) {
 				int indexKilled = line.lastIndexOf("killed");
 				int indexBy = line.lastIndexOf("by");
-				if(indexKilled != -1) {				
-					System.out.println(line.substring(indexKilled + 7,indexBy)); //Aqui eu vou tirar 1 kill desse cara
-				}	
+				Player player = game.searchPlayer(line.substring(indexKilled + 7, indexBy - 1));
+				if (player != null) {
+					game.getPlayers().remove(player);
+					player.setTotalKills(player.getTotalKills() - 1);
+					game.getPlayers().add(player);
+				}
+			} else {
+				int indexNickname = line.lastIndexOf(":") + 2;
+				int indexKilled = line.lastIndexOf("killed");
+				Player player = game.searchPlayer(line.substring(indexNickname, indexKilled - 1));
+				if (player != null) {
+					game.getPlayers().remove(player);
+					player.setTotalKills(player.getTotalKills() + 1);
+					game.getPlayers().add(player);
+				}
 			}
-			else {
-				int indexNickname = line.lastIndexOf(":") + 2;				
-				int indexKilled = line.lastIndexOf("killed");			
-				System.out.println(line.substring(indexNickname,indexKilled)); //aqui eu vou vou dar 1 kill pra esse cara
-			}	
 		}
 	}
-
-} 
+}
