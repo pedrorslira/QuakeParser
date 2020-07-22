@@ -13,16 +13,16 @@ import com.quakeparser.repository.GameRepository;
 @Service
 public class GameService {
 
+	private BufferedReader readFile;
+
 	public void readFile() {
 		try {
 			FileReader file = new FileReader("./src/main/resources/games.log");
-			BufferedReader readFile = new BufferedReader(file);
+			readFile = new BufferedReader(file);
 			String line = readFile.readLine();
 			while (line != null) {
-				handleInitGame(line, readFile);
-				if (line != null) {
-					line = readFile.readLine();
-				}
+				handleInitGame(line);
+				line = readFile.readLine();
 			}
 			file.close();
 		} catch (IOException e) {
@@ -30,12 +30,15 @@ public class GameService {
 		}
 	}
 
-	public void handleInitGame(String line, BufferedReader readFile) {
+	public void handleInitGame(String line) {
 		try {
 			if (line.substring(7, 16).equals("InitGame:")) {
 				Game game = new Game();
 				line = readFile.readLine();
-				while (!line.substring(7, 20).equals("ShutdownGame:")) {
+				while (!line.substring(10, 16).equals("------")) { // em alguns casos, um novo jogo inicia sem ser
+																	// encerrado (sem o "ShutdownGame:") por isso essa
+																	// comparação
+					System.out.println(line);
 					handlePlayer(line, game);
 					handleKill(line, game);
 					line = readFile.readLine();
@@ -58,8 +61,8 @@ public class GameService {
 	}
 
 	public void handleKill(String line, Game game) {
-		if (line.substring(7, 12).equals("Kill:")) {			
-			//game.setTotalKills(game.getTotalKills() + 1); //não esquecer de resolver o total kills para cada jogo
+		if (line.substring(7, 12).equals("Kill:")) {
+			game.setTotalKills(game.getTotalKills() + 1);
 			if (line.contains("<world>")) {
 				int indexKilled = line.lastIndexOf("killed");
 				int indexBy = line.lastIndexOf("by");
