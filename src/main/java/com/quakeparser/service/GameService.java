@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.quakeparser.model.Game;
@@ -14,6 +15,9 @@ import com.quakeparser.repository.GameRepository;
 public class GameService {
 
 	private BufferedReader readFile;
+
+	@Autowired
+	GameRepository gameRepository;;
 
 	public void readFile() {
 		try {
@@ -35,15 +39,14 @@ public class GameService {
 			if (line.substring(7, 16).equals("InitGame:")) {
 				Game game = new Game();
 				line = readFile.readLine();
-				while (!line.substring(10, 16).equals("------")) { // em alguns casos, um novo jogo inicia sem ser
-																	// encerrado (sem o "ShutdownGame:") por isso essa
-																	// comparação
-					System.out.println(line);
+				while (!line.substring(10, 16).equals("------")) { // em alguns casos, um novo jogo inicia sem o antigo
+																	// ser encerrado (sem o "ShutdownGame:")
+																	// por isso essa comparação
 					handlePlayer(line, game);
 					handleKill(line, game);
 					line = readFile.readLine();
 				}
-				GameRepository.getInstance().getGames().add(game);
+				gameRepository.getGames().add(game);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

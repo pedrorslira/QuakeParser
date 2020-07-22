@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +21,8 @@ public class GameController {
 	@Autowired
 	GameService gameService;
 
-	GameRepository gameRepository = GameRepository.getInstance();
+	@Autowired
+	GameRepository gameRepository;
 
 	@GetMapping("/parser")
 	public ArrayList<Game> listGames() {
@@ -28,4 +30,8 @@ public class GameController {
 		return gameRepository.getGames();
 	}
 
+	@GetMapping("/id/{gameId}")
+	public Game getGameById(@PathVariable int gameId) {
+		return gameRepository.getGameById(gameId);
+	}
 }

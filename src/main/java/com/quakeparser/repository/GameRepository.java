@@ -2,34 +2,26 @@ package com.quakeparser.repository;
 
 import java.util.ArrayList;
 
+import org.springframework.stereotype.Repository;
+
 import com.quakeparser.model.Game;
 
+@Repository
 public class GameRepository {
 
-	private static GameRepository instance = null;
 	private ArrayList<Game> games = new ArrayList<>();
-
-	private GameRepository() {
-
-	}
-
-	public static GameRepository getInstance() {
-		if (instance == null) {
-			instance = new GameRepository();
-		}
-		return instance;
-	}
 
 	public ArrayList<Game> getGames() {
 		return games;
 	}
 
-	public void setGames(ArrayList<Game> games) {
-		this.games = games;
-	}
-
-	public static void setInstance(GameRepository instance) {
-		GameRepository.instance = instance;
+	public Game getGameById(int id) {
+		for (Game g : this.games) {
+			if (g.getId() == id) {
+				return g;
+			}
+		}
+		return null;
 	}
 
 }
