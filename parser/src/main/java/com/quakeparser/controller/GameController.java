@@ -26,7 +26,7 @@ public class GameController {
 
 	@GetMapping("/parser")
 	public ArrayList<Game> listGames() {
-		if(gameRepository.getGames().isEmpty()) {
+		if (gameRepository.getGames().isEmpty()) {
 			gameService.readFile();
 		}
 		return gameRepository.getGames();

@@ -3,6 +3,7 @@ package com.quakeparser.service;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,8 @@ public class GameService {
 					handleKill(game);
 					line = readFile.readLine();
 				}
+				Collections.sort(game.getPlayers(),
+						(player1, player2) -> player2.getTotalKills() - player1.getTotalKills());
 				gameRepository.getGames().add(game);
 			}
 		} catch (IOException e) {
