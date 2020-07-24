@@ -19,7 +19,7 @@ Feito isso, rode o main `QuakeParserApplication.java` como "Spring Boot App". Co
 
 Para fazer os requests, eu usei o Postman. O arquivo `response.json` que está na pasta do projeto é o resultado do endpoint da Task 1 que pode ser obtido através de um Get Method `localhost:8080/game/parser` no Postman. 
 
-O resultado da task 3 é obtido através de um Get Method `localhost:8080/game/id/{numeroId}` onde no {numeroId}, o usuário informa o número do id a ser buscado. 
+O resultado da task 3 é obtido através de um Get Method `localhost:8080/game/id/{gameId}` onde no {gameId}, o usuário informa o número do id a ser buscado. 
 Ex: `localhost:8080/game/id/5`
 
 O script `report.rb` na pasta do projeto se trata da Task 2. Basta rodá-lo para a hash e o relatório serem exibidos.
