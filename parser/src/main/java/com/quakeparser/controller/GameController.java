@@ -24,7 +24,7 @@ public class GameController {
 	@Autowired
 	GameRepository gameRepository;
 
-	@GetMapping("/parser")
+	@GetMapping("/parser") //endpoint da task 1
 	public ArrayList<Game> listGames() {
 		if (gameRepository.getGames().isEmpty()) {
 			gameService.readFile();
@@ -32,7 +32,7 @@ public class GameController {
 		return gameRepository.getGames();
 	}
 
-	@GetMapping("/id/{gameId}")
+	@GetMapping("/id/{gameId}") //endpoint da task 3
 	public Game getGameById(@PathVariable int gameId) {
 		return gameRepository.getGameById(gameId);
 	}

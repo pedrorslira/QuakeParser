@@ -36,7 +36,7 @@ public class GameService {
 		}
 	}
 
-	public void handleInitGame() {
+	public void handleInitGame() { // método para localizar e lidar com linhas que mostram que começou um novo jogo
 		try {
 			if (line.substring(7, 16).equals("InitGame:")) {
 				Game game = new Game();
@@ -57,7 +57,8 @@ public class GameService {
 		}
 	}
 
-	public void handlePlayer(Game game) {
+	public void handlePlayer(Game game) { // método para localizar e lidar com linhas que mostram o nickname dos
+											// jogadores em uma partida
 		if (line.length() > 29 && line.substring(7, 29).equals("ClientUserinfoChanged:")) {
 			int indexNickname = line.substring(34).indexOf("\\t");
 			String nickname = line.substring(34).substring(0, indexNickname);
@@ -67,7 +68,8 @@ public class GameService {
 		}
 	}
 
-	public void handleKill(Game game) {
+	public void handleKill(Game game) { // método para localizar e lidar com linhas onde um jogador é morto (isso vai
+										// influenciar na pontuação final de kills)
 
 		if (line.substring(7, 12).equals("Kill:")) {
 			int indexNickname = line.lastIndexOf(":") + 2;
@@ -89,7 +91,8 @@ public class GameService {
 		}
 	}
 
-	public void killScore(Game game, int index, int finalIndex, int score) {
+	public void killScore(Game game, int index, int finalIndex, int score) { // método onde a pontuação de kills de um
+																				// jogador é atualizada
 		Player player = game.searchPlayer(line.substring(index, finalIndex));
 		if (player != null) {
 			game.getPlayers().remove(player);
